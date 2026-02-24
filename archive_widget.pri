@@ -23,7 +23,8 @@ HEADERS += \
     $$PWD/dialogshowimage.h \
     $$PWD/dialogunpackfile.h \
     $$PWD/unpackfileprocess.h \
-    $$PWD/xarchivewidget.h
+    $$PWD/xarchivewidget.h \
+    $$PWD/xgenericarchivewidget.h
 
 SOURCES += \
     $$PWD/archive_widget.cpp \
@@ -33,13 +34,15 @@ SOURCES += \
     $$PWD/dialogshowimage.cpp \
     $$PWD/dialogunpackfile.cpp \
     $$PWD/unpackfileprocess.cpp \
-    $$PWD/xarchivewidget.cpp
+    $$PWD/xarchivewidget.cpp \
+    $$PWD/xgenericarchivewidget.cpp
 
 FORMS += \
     $$PWD/archive_widget.ui \
     $$PWD/dialogarchive.ui \
     $$PWD/dialogshowimage.ui \
-    $$PWD/xarchivewidget.ui
+    $$PWD/xarchivewidget.ui \
+    $$PWD/xgenericarchivewidget.ui
 
 !contains(XCONFIG, allformatwidgets) {
     XCONFIG += allformatwidgets

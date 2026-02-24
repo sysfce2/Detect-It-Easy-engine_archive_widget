@@ -21,4 +21,6 @@ set(ARCHIVE_WIDGET_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/unpackfileprocess.cpp
     ${CMAKE_CURRENT_LIST_DIR}/xarchivewidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/xarchivewidget.ui
+    ${CMAKE_CURRENT_LIST_DIR}/xgenericarchivewidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/xgenericarchivewidget.ui
     )
