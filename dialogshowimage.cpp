@@ -40,39 +40,33 @@ DialogShowImage::DialogShowImage(QWidget *pParent, const QString &sFileName, con
 
     setWindowTitle(sTitle);
 
-    // Check if file exists
     if (!QFileInfo::exists(sFileName)) {
         QMessageBox::critical(this, tr("Error"), tr("Image file does not exist") + QString(": %1").arg(sFileName));
         return;
     }
 
-    // Load the image
     QPixmap pixmap(sFileName);
     if (pixmap.isNull()) {
         QMessageBox::critical(this, tr("Error"), tr("Failed to load image") + QString(": %1").arg(sFileName));
         return;
     }
 
-    // Store original pixmap
     m_originalPixmap = pixmap;
     m_currentPixmap = pixmap;
     m_zoomFactor = 1.0;
-    m_fitToWindow = true;  // Start with fit to window
+    m_fitToWindow = true;
 
-    // Set initial display
     updateImageDisplay();
 
-    // Set window size based on image size, but constrain to reasonable limits
     QSize imageSize = pixmap.size();
-    QSize maxSize(1200, 800);  // Reasonable maximum window size
+    QSize maxSize(1200, 800);
 
     if (imageSize.width() > maxSize.width() || imageSize.height() > maxSize.height()) {
         imageSize.scale(maxSize, Qt::KeepAspectRatio);
     }
 
-    resize(imageSize + QSize(20, 60));  // Add some padding for window decorations
+    resize(imageSize + QSize(20, 60));
 
-    // Display image information
     updateImageInfo();
 }
 
@@ -90,41 +84,21 @@ void DialogShowImage::adjustView()
 
 void DialogShowImage::on_pushButtonClose_clicked()
 {
-    this->close();
+    close();
 }
 
 void DialogShowImage::registerShortcuts(bool bState)
 {
-    if (bState) {
-        // Zoom shortcuts
-        // getShortcuts()->addShortcut(Qt::Key_Plus, this, SLOT(zoomIn()));
-        // getShortcuts()->addShortcut(Qt::Key_Equal, this, SLOT(zoomIn()));
-        // getShortcuts()->addShortcut(Qt::CTRL + Qt::Key_Plus, this, SLOT(zoomIn()));
-        // getShortcuts()->addShortcut(Qt::CTRL + Qt::Key_Equal, this, SLOT(zoomIn()));
-        // getShortcuts()->addShortcut(Qt::Key_Minus, this, SLOT(zoomOut()));
-        // getShortcuts()->addShortcut(Qt::CTRL + Qt::Key_Minus, this, SLOT(zoomOut()));
-        // getShortcuts()->addShortcut(Qt::Key_0, this, SLOT(actualSize()));
-        // getShortcuts()->addShortcut(Qt::CTRL + Qt::Key_0, this, SLOT(actualSize()));
-        // getShortcuts()->addShortcut(Qt::Key_F, this, SLOT(fitToWindow()));
-
-        // // Close shortcuts
-        // getShortcuts()->addShortcut(Qt::Key_Escape, this, SLOT(close()));
-        // getShortcuts()->addShortcut(Qt::CTRL + Qt::Key_W, this, SLOT(close()));
-    } else {
-        // Remove shortcuts when disabled
-        // getShortcuts()->clear();
-    }
+    Q_UNUSED(bState)
 }
 
 void DialogShowImage::updateImageDisplay()
 {
     if (m_fitToWindow) {
-        // Scale to fit the label size while maintaining aspect ratio
         QSize labelSize = ui->labelImage->size();
         QPixmap scaledPixmap = m_originalPixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         ui->labelImage->setPixmap(scaledPixmap);
     } else {
-        // Apply zoom factor
         QSize newSize = m_originalPixmap.size() * m_zoomFactor;
         QPixmap scaledPixmap = m_originalPixmap.scaled(newSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         ui->labelImage->setPixmap(scaledPixmap);
@@ -133,7 +107,7 @@ void DialogShowImage::updateImageDisplay()
 
 void DialogShowImage::setZoomFactor(qreal factor)
 {
-    m_zoomFactor = qMax(0.1, qMin(5.0, factor));  // Limit zoom between 10% and 500%
+    m_zoomFactor = qMax(0.1, qMin(5.0, factor));
     m_fitToWindow = false;
     updateImageDisplay();
     updateImageInfo();
@@ -169,7 +143,6 @@ void DialogShowImage::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
 
-    // Zoom actions
     QAction *zoomInAction = menu.addAction(tr("Zoom In"), this, SLOT(zoomIn()));
     zoomInAction->setShortcut(QKeySequence::ZoomIn);
 
@@ -184,7 +157,6 @@ void DialogShowImage::contextMenuEvent(QContextMenuEvent *event)
 
     menu.addSeparator();
 
-    // Copy and save actions
     QAction *copyAction = menu.addAction(tr("Copy"), this, SLOT(copyToClipboard()));
     copyAction->setShortcut(QKeySequence::Copy);
 
@@ -192,7 +164,6 @@ void DialogShowImage::contextMenuEvent(QContextMenuEvent *event)
 
     menu.addSeparator();
 
-    // Close action
     QAction *closeAction = menu.addAction(tr("Close"), this, SLOT(close()));
     closeAction->setShortcut(QKeySequence::Close);
 
@@ -232,7 +203,6 @@ void DialogShowImage::updateImageInfo()
     QSize size = m_originalPixmap.size();
     QString format = "Unknown";
 
-    // Try to determine format from file extension
     QFileInfo fileInfo(windowTitle());
     QString extension = fileInfo.suffix().toLower();
 
@@ -254,7 +224,6 @@ void DialogShowImage::updateImageInfo()
 void DialogShowImage::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() & Qt::ControlModifier) {
-        // Ctrl + wheel = zoom
         if (event->angleDelta().y() > 0) {
             zoomIn();
         } else {
@@ -262,7 +231,6 @@ void DialogShowImage::wheelEvent(QWheelEvent *event)
         }
         event->accept();
     } else {
-        // Pass to parent for default handling
         QWidget::wheelEvent(event);
     }
 }

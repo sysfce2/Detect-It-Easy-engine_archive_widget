@@ -55,8 +55,8 @@ public:
 
     void setData(XBinary::FT fileType, QIODevice *pDevice, bool bIsImage = false, XADDR nModuleAddress = -1);
     QString getCurrentRecordFileName();
-    virtual void adjustView();
-    virtual void reloadData(bool bSaveSelection);
+    void adjustView() override;
+    void reloadData(bool bSaveSelection) override;
 
 private slots:
     void on_tableViewRecords_customContextMenuRequested(const QPoint &pos);
@@ -73,7 +73,7 @@ private slots:
     void onTableElement_selected(const QItemSelection &itemSelected, const QItemSelection &itemDeselected);
 
 protected:
-    virtual void registerShortcuts(bool bState);
+    void registerShortcuts(bool bState) override;
 
 private:
     void loadRecords();

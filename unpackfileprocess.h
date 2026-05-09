@@ -35,7 +35,7 @@ public:
     void setData(QIODevice *pDevice, XArchive::RECORD *pRecord, const QString &sResultFileName, XBinary::PDSTRUCT *pPdStruct);
     void setData(QIODevice *pDevice, const QString &sResultFileFolder, XBinary::PDSTRUCT *pPdStruct);
 
-    virtual void process() override;
+    void process() override;
 
 private:
     QString m_sFileName;

@@ -77,14 +77,14 @@ void XArchiveWidget::on_tableViewRecords_customContextMenuRequested(const QPoint
 {
     QModelIndexList listIndexes = ui->tableViewRecords->selectionModel()->selectedIndexes();
 
-    if (listIndexes.size() > 0) {
+    if (!listIndexes.isEmpty()) {
         showContext(m_sCurrentRecordFileName, ui->tableViewRecords->viewport()->mapToGlobal(pos));
     }
 }
 
 void XArchiveWidget::showContext(const QString &sRecordFileName, QPoint point)
 {
-    if (sRecordFileName != "") {
+    if (!sRecordFileName.isEmpty()) {
         QMenu contextMenu(this);
 
         QAction actionHex(tr("Hex"), this);
@@ -151,7 +151,7 @@ void XArchiveWidget::handleAction(XArchiveWidget::ACTION action)
 {
     QString sRecordFileName = m_sCurrentRecordFileName;
 
-    if (sRecordFileName != "") {
+    if (!sRecordFileName.isEmpty()) {
         if (action == ACTION_COPYFILENAME) {
             QGuiApplication::clipboard()->setText(sRecordFileName);
         } else if (action == ACTION_DUMP) {
@@ -160,7 +160,7 @@ void XArchiveWidget::handleAction(XArchiveWidget::ACTION action)
 
             sSaveFileName = QFileDialog::getSaveFileName(this, tr("Save file"), sSaveFileName, QFileInfo(record.spInfo.sRecordName).completeSuffix());
 
-            if (sSaveFileName != "") {
+            if (!sSaveFileName.isEmpty()) {
                 if (m_pDevice) {
                     XArchive archive(m_pDevice);
                     if (!archive.decompressToFile(&record, sSaveFileName)) {
@@ -215,7 +215,7 @@ void XArchiveWidget::on_tableViewRecords_doubleClicked(const QModelIndex &index)
 
     QModelIndexList listIndexes = ui->tableViewRecords->selectionModel()->selectedIndexes();
 
-    if (listIndexes.size() > 0) {
+    if (!listIndexes.isEmpty()) {
         hexRecord();
     }
 }
@@ -227,7 +227,7 @@ void XArchiveWidget::onTableElement_selected(const QItemSelection &itemSelected,
 
     QModelIndexList listIndexes = ui->tableViewRecords->selectionModel()->selectedIndexes();
 
-    if (listIndexes.count() > 0) {
+    if (!listIndexes.isEmpty()) {
         QModelIndex sourceIndex = m_pFilterModel->mapToSource(listIndexes.at(0));
         qint32 nRow = sourceIndex.row();
 
@@ -285,7 +285,7 @@ void XArchiveWidget::loadRecords()
                 pItemCompressed->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 listItems.append(pItemCompressed);
 
-                XBinary::HANDLE_METHOD compressMethod = (XBinary::HANDLE_METHOD)record.mapProperties.value(XBinary::FPART_PROP_HANDLEMETHOD).toInt();
+                XBinary::HANDLE_METHOD compressMethod = static_cast<XBinary::HANDLE_METHOD>(record.mapProperties.value(XBinary::FPART_PROP_HANDLEMETHOD).toInt());
                 QStandardItem *pItemMethod = new QStandardItem(XBinary::handleMethodToString(compressMethod));
                 pItemMethod->setEditable(false);
                 listItems.append(pItemMethod);

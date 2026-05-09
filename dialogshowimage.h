@@ -36,7 +36,7 @@ public:
     explicit DialogShowImage(QWidget *pParent, const QString &sFileName, const QString &sTitle);
     ~DialogShowImage();
 
-    virtual void adjustView();
+    void adjustView() override;
 
 private slots:
     void on_pushButtonClose_clicked();
@@ -59,7 +59,7 @@ private:
     QMenu *m_contextMenu;
 
 protected:
-    virtual void registerShortcuts(bool bState);
+    void registerShortcuts(bool bState) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 };

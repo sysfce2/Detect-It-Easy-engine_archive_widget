@@ -67,23 +67,23 @@ void UnpackFileProcess::process()
 
     bool bResult = false;
 
-    if (m_sFileName != "") {
-        if (m_sResultFileName != "") {
+    if (!m_sFileName.isEmpty()) {
+        if (!m_sResultFileName.isEmpty()) {
             bResult = XArchives::decompressToFile(m_sFileName, m_pRecord, m_sResultFileName,
                                                   m_pPdStruct);  // TODO Error signals
-        } else if (m_sResultFileFolder != "") {
+        } else if (!m_sResultFileFolder.isEmpty()) {
             bResult = XArchives::decompressToFolder(m_sFileName, m_sResultFileFolder, m_pPdStruct);  // TODO Error signals
         }
     } else if (m_pDevice) {
-        if (m_sResultFileName != "") {
+        if (!m_sResultFileName.isEmpty()) {
             bResult = XArchives::decompressToFile(m_pDevice, m_pRecord, m_sResultFileName,
                                                   m_pPdStruct);  // TODO Error signals
-        } else if (m_sResultFileFolder != "") {
+        } else if (!m_sResultFileFolder.isEmpty()) {
             bResult = XArchives::decompressToFolder(m_pDevice, m_sResultFileFolder, m_pPdStruct);  // TODO Error signals
         }
     }
 
-    if (!(bResult)) {
+    if (!bResult) {
         XBinary::setPdStructStopped(m_pPdStruct);
     }
 
