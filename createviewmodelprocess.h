@@ -35,17 +35,17 @@ class CreateViewModelProcess : public QObject {
     Q_OBJECT
 
 public:
-    enum UR {
+    enum UR : qint32 {
         UR_PATH = 0,
         UR_SIZE,
         UR_ISROOT,
-        UR_FT
+        UR_FT,
     };
 
-    enum TYPE {
+    enum TYPE : qint32 {
         TYPE_UNKNOWN = 0,
         TYPE_FILE,
-        TYPE_DIRECTORY
+        TYPE_DIRECTORY,
     };
 
     struct RECORD {
@@ -74,6 +74,7 @@ signals:
 
 public slots:
     void process();
+    void moveToGuiThread();
 
 private:
     TYPE m_type;

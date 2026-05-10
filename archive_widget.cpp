@@ -176,6 +176,16 @@ void Archive_widget::reloadData(bool bSaveSelection)
 
 Archive_widget::~Archive_widget()
 {
+    QAbstractItemModel *pTreeModel = ui->treeViewArchive->model();
+    QAbstractItemModel *pTableModel = m_pFilterTable->sourceModel();
+
+    ui->treeViewArchive->setModel(nullptr);
+    ui->tableViewArchive->setModel(nullptr);
+    m_pFilterTable->setSourceModel(nullptr);
+
+    deleteOldAbstractModel(&pTreeModel);
+    deleteOldAbstractModel(&pTableModel);
+
     delete ui;
 }
 
@@ -511,8 +521,8 @@ void Archive_widget::_handleActionOpenFile(const QString &sFileName, const QStri
 
         if (bReadWrite) {
             bOpen = XBinary::tryToOpen(&file);
-        } else {
-            bOpen = file.open(QIODevice::ReadOnly);
+        } else if (file.open(QIODevice::ReadOnly)) {
+            bOpen = true;
         }
 
         if (bOpen) {

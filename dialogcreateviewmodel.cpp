@@ -28,13 +28,13 @@ DialogCreateViewModel::DialogCreateViewModel(QWidget *pParent) : XDialogProcess(
     m_pThread.reset(new QThread);
     m_bIsRunning = false;
 
-    m_pCreateViewModelProcess->moveToThread(m_pThread.data());
-
-    connect(m_pThread.data(), SIGNAL(started()), m_pCreateViewModelProcess.data(), SLOT(process()));
-    connect(m_pCreateViewModelProcess.data(), SIGNAL(completed(qint64)), this, SLOT(onCompleted(qint64)));
-    connect(m_pCreateViewModelProcess.data(), SIGNAL(progressValueChanged(qint32)), this, SLOT(onProgressValueChanged(qint32)));
-    connect(m_pCreateViewModelProcess.data(), SIGNAL(progressMessageChanged(const QString &)), this, SLOT(onProgressMessageChanged(const QString &)));
-    connect(m_pCreateViewModelProcess.data(), SIGNAL(errorMessage(const QString &)), this, SLOT(onErrorMessage(const QString &)));
+    connect(m_pThread.get(), SIGNAL(started()), m_pCreateViewModelProcess.get(), SLOT(process()));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(completed(qint64)), this, SLOT(onCompleted(qint64)));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(completed(qint64)), m_pCreateViewModelProcess.get(), SLOT(moveToGuiThread()));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(completed(qint64)), m_pThread.get(), SLOT(quit()));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(progressValueChanged(qint32)), this, SLOT(onProgressValueChanged(qint32)));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(progressMessageChanged(const QString &)), this, SLOT(onProgressMessageChanged(const QString &)));
+    connect(m_pCreateViewModelProcess.get(), SIGNAL(errorMessage(const QString &)), this, SLOT(onErrorMessage(const QString &)));
 }
 
 DialogCreateViewModel::~DialogCreateViewModel()
@@ -72,6 +72,10 @@ void DialogCreateViewModel::setData(CreateViewModelProcess::TYPE type, const QSt
 
     m_bIsRunning = true;
     m_pCreateViewModelProcess->setData(type, sName, fileType, pListArchiveRecords, ppTreeModel, ppTableModel, stFilterFileTypes, pListViewRecords, getPdStruct());
+    if (m_pThread->isRunning()) {
+        m_pThread->wait();
+    }
+    m_pCreateViewModelProcess->moveToThread(m_pThread.get());
     m_pThread->start();
 }
 

@@ -25,7 +25,8 @@
 #include <QStandardItemModel>
 #include <QThread>
 #include <QTimer>
-#include <QScopedPointer>
+
+#include <memory>
 
 #include "createviewmodelprocess.h"
 #include "xdialogprocess.h"
@@ -56,8 +57,8 @@ private slots:
     void onErrorMessage(const QString &sText);
 
 private:
-    QScopedPointer<CreateViewModelProcess> m_pCreateViewModelProcess;
-    QScopedPointer<QThread> m_pThread;
+    std::unique_ptr<CreateViewModelProcess> m_pCreateViewModelProcess;
+    std::unique_ptr<QThread> m_pThread;
     bool m_bIsRunning;
 };
 
