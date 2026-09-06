@@ -185,6 +185,29 @@
     </layout>
    </item>
    <item>
+    <widget class="QWidget" name="widgetDiskMode">
+     <layout class="QHBoxLayout" name="horizontalLayoutDiskMode">
+      <property name="leftMargin"><number>4</number></property>
+      <property name="topMargin"><number>0</number></property>
+      <property name="rightMargin"><number>4</number></property>
+      <property name="bottomMargin"><number>2</number></property>
+      <item>
+       <widget class="QCheckBox" name="checkBoxDiskFilesystem">
+        <property name="text"><string>Files inside disk (NTFS)</string></property>
+        <property name="toolTip"><string>Read files from a supported NTFS filesystem inside this disk image. Uncheck to export the raw disk.</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelDiskFilesystemStatus">
+        <property name="text"><string>No supported NTFS filesystem could be read. Uncheck to export the raw disk.</string></property>
+        <property name="wordWrap"><bool>true</bool></property>
+       </widget>
+      </item>
+      <item><spacer name="horizontalSpacerDiskMode"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="XTableView" name="tableViewRecords">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>

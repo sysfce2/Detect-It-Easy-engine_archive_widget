@@ -47,6 +47,7 @@ public:
     QString getCurrentRecordFileName();
     const QList<XBinary::ARCHIVERECORD> *getArchiveRecords() const;
     QString getPassword() const;
+    QMap<XBinary::UNPACK_PROP, QVariant> getUnpackProperties() const;
     bool isArchiveAvailable() const;
     virtual void adjustView();
     virtual void reloadData(bool bSaveSelection);
@@ -63,6 +64,7 @@ private slots:
     void on_toolButtonTest_clicked();
     void on_lineEditPassword_editingFinished();
     void on_checkBoxAdvanced_toggled(bool bChecked);
+    void on_checkBoxDiskFilesystem_toggled(bool bChecked);
     void on_tableViewRecords_customContextMenuRequested(const QPoint &pos);
     void showContext(const QString &sRecordFileName, QPoint point);
     void openRecord();
@@ -93,6 +95,8 @@ private:
     bool extractRecordToFile(qint32 nRow, const QString &sFileName);
     void analyzeRecord(RECORD_ANALYSIS analysis);
     QString getRecordDetails(const XBinary::ARCHIVERECORD &record) const;
+    bool supportsDiskFilesystem() const;
+    void updateDiskModeControls();
     void updateActions();
     void loadRecords();
 

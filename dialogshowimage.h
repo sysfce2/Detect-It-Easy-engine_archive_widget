@@ -27,6 +27,7 @@
 class QAction;
 class QContextMenuEvent;
 class QEvent;
+class QKeySequence;
 class QWheelEvent;
 
 namespace Ui {
@@ -46,6 +47,7 @@ public:
     bool saveToFile(const QString &sFileName) const;
 
 private:
+    QAction *createAction(const QString &sObjectName, const QString &sText, const QKeySequence &shortcut);
     void createActions();
     void setLoadError(const QString &sMessage);
     void updateImageDisplay();

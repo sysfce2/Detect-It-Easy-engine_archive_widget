@@ -126,7 +126,7 @@ DialogShowImage::DialogShowImage(QWidget *pParent, const QString &sFileName, con
     m_fitToWindow = true;
     updateImageInfo();
     updateActionState();
-    QTimer::singleShot(0, this, [this]() { updateImageDisplay(); });
+    QTimer::singleShot(0, this, &DialogShowImage::updateImageDisplay);
 }
 
 DialogShowImage::~DialogShowImage()
@@ -137,17 +137,18 @@ DialogShowImage::~DialogShowImage()
     delete ui;
 }
 
+QAction *DialogShowImage::createAction(const QString &sObjectName, const QString &sText, const QKeySequence &shortcut)
+{
+    QAction *pAction = new QAction(sText, this);
+    pAction->setObjectName(sObjectName);
+    pAction->setShortcut(shortcut);
+    pAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    addAction(pAction);
+    return pAction;
+}
+
 void DialogShowImage::createActions()
 {
-    const auto createAction = [this](const QString &sObjectName, const QString &sText, const QKeySequence &shortcut) {
-        QAction *pAction = new QAction(sText, this);
-        pAction->setObjectName(sObjectName);
-        pAction->setShortcut(shortcut);
-        pAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        addAction(pAction);
-        return pAction;
-    };
-
     QKeySequence zoomOutShortcut = QKeySequence::ZoomOut;
     if (zoomOutShortcut.isEmpty()) {
         zoomOutShortcut = QKeySequence(QStringLiteral("Ctrl+-"));
@@ -170,12 +171,12 @@ void DialogShowImage::createActions()
     m_pActionClose = createAction(QStringLiteral("actionClose"), tr("Close"), QKeySequence::Close);
 
     m_pActionFitToWindow->setCheckable(true);
-    connect(m_pActionZoomOut, &QAction::triggered, this, [this]() { zoomOut(); });
-    connect(m_pActionActualSize, &QAction::triggered, this, [this]() { actualSize(); });
-    connect(m_pActionFitToWindow, &QAction::triggered, this, [this]() { fitToWindow(); });
-    connect(m_pActionZoomIn, &QAction::triggered, this, [this]() { zoomIn(); });
-    connect(m_pActionCopy, &QAction::triggered, this, [this]() { copyToClipboard(); });
-    connect(m_pActionSaveAs, &QAction::triggered, this, [this]() { saveAs(); });
+    connect(m_pActionZoomOut, &QAction::triggered, this, &DialogShowImage::zoomOut);
+    connect(m_pActionActualSize, &QAction::triggered, this, &DialogShowImage::actualSize);
+    connect(m_pActionFitToWindow, &QAction::triggered, this, &DialogShowImage::fitToWindow);
+    connect(m_pActionZoomIn, &QAction::triggered, this, &DialogShowImage::zoomIn);
+    connect(m_pActionCopy, &QAction::triggered, this, &DialogShowImage::copyToClipboard);
+    connect(m_pActionSaveAs, &QAction::triggered, this, &DialogShowImage::saveAs);
     connect(m_pActionClose, &QAction::triggered, this, &QDialog::reject);
 
     m_pActionZoomOut->setToolTip(tr("Zoom out (%1)").arg(shortcutText(m_pActionZoomOut->shortcut())));

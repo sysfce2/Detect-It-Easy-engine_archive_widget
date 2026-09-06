@@ -139,6 +139,7 @@ ArchiveExplorerWidget::ArchiveExplorerWidget(QWidget *pParent) : XShortcutsWidge
     m_nCurrentFileSize = 0;
     m_bAdvanced = false;
     m_bArchiveAvailable = false;
+    ui->widgetDiskMode->hide();
 
     XOptions::adjustToolButton(ui->toolButtonExtractAll, XOptions::ICONTYPE_EXTRACTOR);
     XOptions::adjustToolButton(ui->toolButtonTest, XOptions::ICONTYPE_SCAN);
@@ -165,6 +166,10 @@ void ArchiveExplorerWidget::setData(XBinary::FT fileType, QIODevice *pDevice, bo
     // setData() establishes a new archive session. Never carry credentials
     // across sessions, including when a caller reuses the same QFile object.
     ui->lineEditPassword->clear();
+    {
+        QSignalBlocker blocker(ui->checkBoxDiskFilesystem);
+        ui->checkBoxDiskFilesystem->setChecked(false);
+    }
 
     m_pDevice = pDevice;
 
@@ -182,6 +187,7 @@ void ArchiveExplorerWidget::setData(XBinary::FT fileType, QIODevice *pDevice, bo
         }
     }
 
+    updateDiskModeControls();
     loadRecords();
     updateActions();
 }
@@ -194,6 +200,38 @@ const QList<XBinary::ARCHIVERECORD> *ArchiveExplorerWidget::getArchiveRecords() 
 QString ArchiveExplorerWidget::getPassword() const
 {
     return ui->lineEditPassword->text();
+}
+
+QMap<XBinary::UNPACK_PROP, QVariant> ArchiveExplorerWidget::getUnpackProperties() const
+{
+    QMap<XBinary::UNPACK_PROP, QVariant> properties;
+    properties.insert(XBinary::UNPACK_PROP_PASSWORD, getPassword());
+    if (supportsDiskFilesystem()) {
+        properties.insert(XBinary::UNPACK_PROP_DISK_FILESYSTEM, ui->checkBoxDiskFilesystem->isChecked());
+    }
+    return properties;
+}
+
+bool ArchiveExplorerWidget::supportsDiskFilesystem() const
+{
+    return m_fileType == XBinary::FT_VHD || m_fileType == XBinary::FT_VDI ||
+           m_fileType == XBinary::FT_QCOW2 || m_fileType == XBinary::FT_VHDX;
+}
+
+void ArchiveExplorerWidget::updateDiskModeControls()
+{
+    const bool supported = supportsDiskFilesystem();
+    ui->widgetDiskMode->setVisible(supported);
+    if (!supported) {
+        QSignalBlocker blocker(ui->checkBoxDiskFilesystem);
+        ui->checkBoxDiskFilesystem->setChecked(false);
+    }
+}
+
+void ArchiveExplorerWidget::on_checkBoxDiskFilesystem_toggled(bool bChecked)
+{
+    Q_UNUSED(bChecked)
+    if (m_pDevice && m_pDevice->isOpen()) reloadData(false);
 }
 
 bool ArchiveExplorerWidget::isArchiveAvailable() const
@@ -273,6 +311,7 @@ void ArchiveExplorerWidget::on_comboBoxType_currentIndexChanged(int nIndex)
     // cannot be unpacked, loadRecords() shows the file itself and leaves
     // Extract/Test disabled.
     m_fileType = (XBinary::FT)(ui->comboBoxType->currentData().toInt());
+    updateDiskModeControls();
 
     reloadData(true);
 }
@@ -718,8 +757,7 @@ bool ArchiveExplorerWidget::extractRecordToDevice(qint32 nRow, QIODevice *pOutpu
     }
 
     XBinary::PDSTRUCT pdStruct = XBinary::createPdStruct();
-    QMap<XBinary::UNPACK_PROP, QVariant> mapProperties;
-    mapProperties.insert(XBinary::UNPACK_PROP_PASSWORD, getPassword());
+    QMap<XBinary::UNPACK_PROP, QVariant> mapProperties = getUnpackProperties();
     if (nMaxOutputSize >= 0) {
         mapProperties.insert(XBinary::UNPACK_PROP_MAX_OUTPUT_SIZE, nMaxOutputSize);
     }
@@ -839,6 +877,7 @@ void ArchiveExplorerWidget::updateActions()
 
     ui->toolButtonExtractAll->setEnabled(bIsArchive);
     ui->toolButtonTest->setEnabled(bIsArchive);
+    ui->labelDiskFilesystemStatus->setVisible(supportsDiskFilesystem() && ui->checkBoxDiskFilesystem->isChecked() && !bIsArchive);
 }
 
 void ArchiveExplorerWidget::loadRecords()
@@ -868,8 +907,7 @@ void ArchiveExplorerWidget::loadRecords()
         if (pArchive) {
             listColumns = pArchive->getAvailableFPARTProperties();
             XBinary::UNPACK_STATE state = {};
-            QMap<XBinary::UNPACK_PROP, QVariant> mapProperties;
-            mapProperties.insert(XBinary::UNPACK_PROP_PASSWORD, getPassword());
+            QMap<XBinary::UNPACK_PROP, QVariant> mapProperties = getUnpackProperties();
             bool bInit = pArchive->initUnpack(&state, mapProperties, nullptr);
 
             if (!bInit) {
