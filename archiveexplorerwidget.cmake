@@ -53,4 +53,8 @@ set(ARCHIVEEXPLORERWIDGET_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/archiveexplorerwidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/archiveexplorerwidget.h
     ${CMAKE_CURRENT_LIST_DIR}/archiveexplorerwidget.ui
+    ${CMAKE_CURRENT_LIST_DIR}/dialogunpackfile.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/dialogunpackfile.h
+    ${CMAKE_CURRENT_LIST_DIR}/unpackfileprocess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/unpackfileprocess.h
     )
